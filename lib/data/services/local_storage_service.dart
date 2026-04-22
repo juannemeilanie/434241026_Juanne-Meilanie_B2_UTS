@@ -39,7 +39,6 @@ class LocalStorageService {
   static Future<void> seedDefaultUsers() async {
     final users = getUsers();
 
-    // Kalau sudah ada user, jangan seed ulang
     if (users.isNotEmpty) return;
 
     final defaultUsers = [
@@ -97,7 +96,6 @@ class LocalStorageService {
     }
   }
 
-  // ── Session (siapa yang sedang login) ──
   static Future<void> saveLoggedInUserId(String userId) async {
     await prefs.setString(_keyLoggedInUserId, userId);
   }
@@ -105,7 +103,6 @@ class LocalStorageService {
   static String? getLoggedInUserId() {
     return prefs.getString(_keyLoggedInUserId);
   }
-
 
   static Future<void> clearLoggedInUser() async {
     await prefs.remove(_keyLoggedInUserId);
@@ -145,7 +142,6 @@ class LocalStorageService {
     }
   }
 
-  // Generate ID tiket otomatis: TKT-001, TKT-002, dst
   static Future<String> generateTicketId() async {
     final counter = (prefs.getInt(_keyTicketCounter) ?? 0) + 1;
     await prefs.setInt(_keyTicketCounter, counter);

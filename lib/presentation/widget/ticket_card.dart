@@ -31,7 +31,6 @@ class TicketCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 🔹 ID & TIME
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -51,7 +50,6 @@ class TicketCard extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              // 🔹 TITLE
               Text(
                 ticket.title,
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -63,7 +61,6 @@ class TicketCard extends StatelessWidget {
 
               const SizedBox(height: 6),
 
-              // 🔹 DESCRIPTION
               Text(
                 ticket.description.isNotEmpty
                     ? ticket.description
@@ -77,7 +74,6 @@ class TicketCard extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // 🔹 BADGES
               Row(
                 children: [
                   StatusBadge(
@@ -92,7 +88,6 @@ class TicketCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
 
-                  // CATEGORY
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8, vertical: 4),
@@ -108,7 +103,6 @@ class TicketCard extends StatelessWidget {
 
                   const Spacer(),
 
-                  // 🔹 ASSIGNED INDICATOR (lebih jelas)
                   if (ticket.assignedTo != null)
                     Row(
                       children: const [

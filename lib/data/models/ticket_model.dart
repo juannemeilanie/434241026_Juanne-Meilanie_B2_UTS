@@ -8,11 +8,11 @@ class TicketModel {
   final String userId;
   final String userName;
 
-  final String? assignedTo;        // 🔥 dibuat final (lebih aman)
-  final String? assignedToName;    // 🔥 dibuat final
+  final String? assignedTo;
+  final String? assignedToName;
 
   final DateTime createdAt;
-  final DateTime updatedAt;        // 🔥 final (hindari mutation bug)
+  final DateTime updatedAt;
   final List<String> attachments;
 
   TicketModel({
@@ -31,7 +31,6 @@ class TicketModel {
     this.attachments = const [],
   });
 
-  // ================= COPY WITH =================
   TicketModel copyWith({
     String? id,
     String? title,
@@ -47,7 +46,7 @@ class TicketModel {
     DateTime? updatedAt,
     List<String>? attachments,
 
-    bool clearAssigned = false, // 🔥 untuk unassign
+    bool clearAssigned = false,
   }) {
     return TicketModel(
       id: id ?? this.id,
@@ -73,7 +72,6 @@ class TicketModel {
     );
   }
 
-  // ================= TO JSON =================
   Map<String, dynamic> toJson() => {
     'id': id,
     'title': title,
@@ -90,7 +88,6 @@ class TicketModel {
     'attachments': attachments,
   };
 
-  // ================= FROM JSON =================
   factory TicketModel.fromJson(Map<String, dynamic> json) {
     return TicketModel(
       id: json['id'] ?? '',

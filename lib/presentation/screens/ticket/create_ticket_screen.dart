@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:flutter/foundation.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/ticket_provider.dart';
 
@@ -30,7 +30,6 @@ class _CreateTicketScreenState
 
   bool _isLoading = false;
 
-  // ================= PICK IMAGE =================
   Future<void> pickImage(ImageSource source) async {
     final img = await _picker.pickImage(source: source);
 
@@ -43,7 +42,6 @@ class _CreateTicketScreenState
     setState(() => _images.removeAt(i));
   }
 
-  // ================= SUBMIT =================
   Future<void> submit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -90,8 +88,7 @@ class _CreateTicketScreenState
       'Hardware',
       'Software',
       'Jaringan',
-      'Akun',
-      'Email'
+      'Akun'
     ];
 
     return Scaffold(
@@ -102,7 +99,6 @@ class _CreateTicketScreenState
           key: _formKey,
           child: ListView(
             children: [
-              // TITLE
               TextFormField(
                 controller: _titleCtrl,
                 decoration:
@@ -113,7 +109,6 @@ class _CreateTicketScreenState
 
               const SizedBox(height: 12),
 
-              // DESC
               TextFormField(
                 controller: _descCtrl,
                 maxLines: 4,
@@ -125,7 +120,6 @@ class _CreateTicketScreenState
 
               const SizedBox(height: 12),
 
-              // CATEGORY
               DropdownButtonFormField(
                 value: _category,
                 items: categories
@@ -142,7 +136,6 @@ class _CreateTicketScreenState
 
               const SizedBox(height: 12),
 
-              // PRIORITY
               DropdownButtonFormField(
                 value: _priority,
                 items: ['low', 'medium', 'high']
@@ -159,7 +152,6 @@ class _CreateTicketScreenState
 
               const SizedBox(height: 16),
 
-              // BUTTON IMAGE
               Row(
                 children: [
                   ElevatedButton.icon(
@@ -180,18 +172,27 @@ class _CreateTicketScreenState
 
               const SizedBox(height: 12),
 
-              // PREVIEW
               Wrap(
                 spacing: 8,
                 children: List.generate(_images.length, (i) {
+                  final img = _images[i];
+
                   return Stack(
                     children: [
-                      Image.file(
-                        File(_images[i].path),
+                      kIsWeb
+                          ? Image.network(
+                        img.path,
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                      )
+                          : Image.file(
+                        File(img.path),
                         width: 80,
                         height: 80,
                         fit: BoxFit.cover,
                       ),
+
                       Positioned(
                         right: 0,
                         top: 0,

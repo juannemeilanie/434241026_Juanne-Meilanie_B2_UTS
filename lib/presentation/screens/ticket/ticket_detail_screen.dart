@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'package:utsmobile/presentation/providers/auth_provider.dart';
 import 'package:utsmobile/presentation/providers/ticket_provider.dart';
-
+import 'dart:io';
 import 'package:utsmobile/data/services/local_storage_service.dart';
-
+import 'package:flutter/foundation.dart';
 import 'package:utsmobile/presentation/widget/status_badge.dart';
 import 'package:utsmobile/presentation/widget/priority_badge.dart';
 import 'package:utsmobile/presentation/widget/comment_bubble.dart';
@@ -40,7 +39,6 @@ class _TicketDetailScreenState
     super.dispose();
   }
 
-  // ================= SEND COMMENT =================
   Future<void> _sendComment() async {
     final text = _commentCtrl.text.trim();
     if (text.isEmpty) return;
@@ -75,7 +73,6 @@ class _TicketDetailScreenState
     }
   }
 
-  // ================= UPDATE STATUS =================
   Future<void> _showUpdateStatusDialog() async {
     final ticketProv = context.read<TicketProvider>();
     final auth = context.read<AuthProvider>();
@@ -148,7 +145,6 @@ class _TicketDetailScreenState
     );
   }
 
-  // ================= ASSIGN =================
   Future<void> _showAssignDialog() async {
     final ticketProv = context.read<TicketProvider>();
 
@@ -222,7 +218,6 @@ class _TicketDetailScreenState
     );
   }
 
-  // ================= BUILD =================
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
@@ -301,7 +296,6 @@ class _TicketDetailScreenState
                 crossAxisAlignment:
                 CrossAxisAlignment.start,
                 children: [
-                  // HEADER
                   Card(
                     child: Padding(
                       padding:
@@ -331,8 +325,36 @@ class _TicketDetailScreenState
                           ),
 
                           const SizedBox(height: 16),
-
                           Text(ticket.description),
+
+                          if (ticket.attachments.isNotEmpty) ...[
+                            const SizedBox(height: 12),
+                            const Text('Lampiran:'),
+
+                            const SizedBox(height: 8),
+
+                            Wrap(
+                              spacing: 8,
+                              children: ticket.attachments.map((path) {
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: kIsWeb
+                                      ? Image.network(
+                                    path,
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.cover,
+                                  )
+                                      : Image.file(
+                                    File(path),
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.cover,
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ],
 
                           const SizedBox(height: 16),
 
@@ -350,7 +372,6 @@ class _TicketDetailScreenState
 
                   const SizedBox(height: 16),
 
-                  // COMMENTS
                   Text(
                     'Komentar (${comments.length})',
                     style: theme.textTheme.titleMedium,
@@ -377,7 +398,6 @@ class _TicketDetailScreenState
             ),
           ),
 
-          // INPUT
           if (ticket.status != 'closed')
             Container(
               padding: EdgeInsets.only(

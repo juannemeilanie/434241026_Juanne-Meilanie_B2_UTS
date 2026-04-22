@@ -26,7 +26,6 @@ GoRouter createRouter(AuthProvider authProvider) {
       final isLoggedIn = authProvider.isLoggedIn;
       final loc = state.matchedLocation;
 
-      // Splash dibiarkan jalan sendiri — dia yang akan context.go()
       if (loc == '/splash') return null;
 
       final publicRoutes = ['/login', '/register', '/forgot-password'];
@@ -38,13 +37,11 @@ GoRouter createRouter(AuthProvider authProvider) {
     },
     refreshListenable: authProvider,
     routes: [
-      // Splash
       GoRoute(
         path: '/splash',
         builder: (context, state) => const SplashScreen(),
       ),
 
-      // Auth
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
@@ -58,7 +55,6 @@ GoRouter createRouter(AuthProvider authProvider) {
         builder: (context, state) => const ForgotPasswordScreen(),
       ),
 
-      // Main shell dengan bottom nav
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) => MainScaffold(child: child),
@@ -82,14 +78,12 @@ GoRouter createRouter(AuthProvider authProvider) {
         ],
       ),
 
-      // Buat tiket — path unik, tidak bentrok dengan /tickets/:id
       GoRoute(
         path: '/create-ticket',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const CreateTicketScreen(),
       ),
 
-      // Detail tiket
       GoRoute(
         path: '/tickets/:id',
         parentNavigatorKey: _rootNavigatorKey,

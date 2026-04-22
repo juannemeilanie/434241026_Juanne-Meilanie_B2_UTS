@@ -12,7 +12,6 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoggedIn => _currentUser != null;
   String? get errorMessage => _errorMessage;
 
-  // ================= RESTORE SESSION =================
   void restoreSession() {
     try {
       _currentUser = LocalStorageService.getLoggedInUser();
@@ -22,7 +21,6 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ================= LOGIN =================
   Future<bool> login(String email, String password) async {
     _setLoading(true);
 
@@ -46,7 +44,6 @@ class AuthProvider extends ChangeNotifier {
     return true;
   }
 
-  // ================= REGISTER =================
   Future<bool> register(
       String name,
       String email,
@@ -67,12 +64,11 @@ class AuthProvider extends ChangeNotifier {
       name: name.trim(),
       email: email.trim().toLowerCase(),
       password: password,
-      role: 'user', // 🔥 default user (AMAN)
+      role: 'user',
     );
 
     await LocalStorageService.addUser(newUser);
 
-    // auto login
     _currentUser = newUser;
     await LocalStorageService.saveLoggedInUserId(newUser.id);
 
@@ -80,8 +76,6 @@ class AuthProvider extends ChangeNotifier {
     return true;
   }
 
-  // ================= CREATE HELPDESK / ADMIN =================
-  // 🔥 Tambahan penting (biar bisa bikin role selain user)
   Future<void> createUserByAdmin({
     required String name,
     required String email,
@@ -99,7 +93,6 @@ class AuthProvider extends ChangeNotifier {
     await LocalStorageService.addUser(newUser);
   }
 
-  // ================= RESET PASSWORD =================
   Future<bool> resetPassword(String email) async {
     _setLoading(true);
 
@@ -110,7 +103,6 @@ class AuthProvider extends ChangeNotifier {
     return exists;
   }
 
-  // ================= UPDATE PROFILE =================
   Future<void> updateProfile(String name) async {
     if (_currentUser == null) return;
 
@@ -121,7 +113,6 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ================= LOGOUT =================
   Future<void> logout() async {
     await LocalStorageService.clearLoggedInUser();
     _currentUser = null;
@@ -129,7 +120,6 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ================= HELPERS =================
   void _setLoading(bool value) {
     _isLoading = value;
     _errorMessage = null;

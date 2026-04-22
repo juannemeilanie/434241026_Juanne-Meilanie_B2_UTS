@@ -5,7 +5,6 @@ import '../constants/app_constants.dart';
 class AppTheme {
   AppTheme._();
 
-  // ─────────────── LIGHT THEME ───────────────
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
@@ -19,7 +18,6 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: const Color(0xFFF5F6FA),
 
-      // AppBar
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
@@ -33,7 +31,6 @@ class AppTheme {
         iconTheme: IconThemeData(color: Colors.white),
       ),
 
-      // Card
       cardTheme: CardThemeData(
         elevation: 2,
         color: Colors.white,
@@ -44,7 +41,6 @@ class AppTheme {
         margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
       ),
 
-      // Input
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white,
@@ -69,7 +65,6 @@ class AppTheme {
         labelStyle: const TextStyle(color: Colors.grey, fontSize: 14),
       ),
 
-      // ElevatedButton
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
@@ -86,7 +81,6 @@ class AppTheme {
         ),
       ),
 
-      // TextButton
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
@@ -97,7 +91,6 @@ class AppTheme {
         ),
       ),
 
-      // OutlinedButton
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
@@ -109,7 +102,6 @@ class AppTheme {
         ),
       ),
 
-      // Chip
       chipTheme: ChipThemeData(
         backgroundColor: const Color(0xFFF5F5F5),
         selectedColor: AppColors.primary,
@@ -120,19 +112,16 @@ class AppTheme {
         ),
       ),
 
-      // Divider
       dividerTheme: const DividerThemeData(
         color: Color(0xFFEEEEEE),
         thickness: 1,
         space: 1,
       ),
 
-      // ListTile
       listTileTheme: const ListTileThemeData(
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       ),
 
-      // Text
       textTheme: const TextTheme(
         displayLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF212121)),
         displayMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF212121)),
@@ -150,7 +139,6 @@ class AppTheme {
         labelSmall: TextStyle(fontSize: 11, color: Color(0xFF9E9E9E)),
       ),
 
-      // BottomNavBar
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
         selectedItemColor: AppColors.primary,
@@ -159,14 +147,12 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
       ),
 
-      // FloatingActionButton
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 4,
       ),
 
-      // Switch
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) return AppColors.primary;
@@ -182,7 +168,6 @@ class AppTheme {
     );
   }
 
-  // ─────────────── DARK THEME ───────────────
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
@@ -199,7 +184,7 @@ class AppTheme {
 
       appBarTheme: const AppBarTheme(
         backgroundColor: Color(0xFF1E1E1E),
-        foregroundColor: Colors.white,
+        foregroundColor: Colors.grey,
         elevation: 0,
         centerTitle: false,
         titleTextStyle: TextStyle(
@@ -207,7 +192,7 @@ class AppTheme {
           fontSize: 18,
           fontWeight: FontWeight.w600,
         ),
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Colors.grey),
       ),
 
       cardTheme: CardThemeData(
@@ -243,7 +228,7 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryLight,
-          foregroundColor: Colors.white,
+          foregroundColor: Colors.grey,
           elevation: 2,
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
           shape: RoundedRectangleBorder(

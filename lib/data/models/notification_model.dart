@@ -4,7 +4,7 @@ class NotificationModel {
   final String body;
   final String ticketId;
   final String type;
-  final String targetUserId; // user mana yang dapat notif ini
+  final String targetUserId;
   bool isRead;
   final DateTime createdAt;
 

@@ -14,7 +14,6 @@ import 'package:utsmobile/core/router/app_router.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ✅ Init local storage WAJIB sebelum runApp
   await LocalStorageService.init();
   await LocalStorageService.seedDefaultUsers();
 
@@ -58,17 +57,14 @@ class _ETicketingAppState extends State<ETicketingApp> {
     super.initState();
     final authProvider = context.read<AuthProvider>();
 
-    // ✅ Restore session — cek apakah user pernah login sebelumnya
     authProvider.restoreSession();
 
-    // Load data kalau sudah login
     if (authProvider.isLoggedIn) {
       final userId = authProvider.currentUser!.id;
       context.read<TicketProvider>().loadTickets();
       context.read<NotificationProvider>().loadForUser(userId);
     }
 
-    // ✅ Router dibuat SEKALI di sini, bukan di build()
     _router = createRouter(authProvider);
   }
 

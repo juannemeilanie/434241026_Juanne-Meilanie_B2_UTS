@@ -5,7 +5,7 @@ import 'package:utsmobile/presentation/providers/auth_provider.dart';
 import 'package:utsmobile/presentation/providers/ticket_provider.dart';
 import 'package:utsmobile/presentation/widget/ticket_card.dart';
 import 'package:utsmobile/core/constants/app_constants.dart';
-import 'package:utsmobile/presentation/widget/empty_state.dart';
+
 class TicketListScreen extends StatelessWidget {
   const TicketListScreen({super.key});
 

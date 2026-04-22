@@ -25,7 +25,6 @@ class AppColors {
   static const Color greyLight = Color(0xFFF5F5F5);
   static const Color greyBorder = Color(0xFFE0E0E0);
 
-  // Status colors
   static Color statusColor(String status) {
     switch (status) {
       case 'open':
@@ -87,9 +86,6 @@ class AppColors {
   }
 }
 
-// ─────────────────────────────────────────
-// LABEL STATUS & PRIORITY
-// ─────────────────────────────────────────
 class TicketConstants {
   TicketConstants._();
 
@@ -142,9 +138,6 @@ class TicketConstants {
   }
 }
 
-// ─────────────────────────────────────────
-// STRING UMUM
-// ─────────────────────────────────────────
 class AppStrings {
   AppStrings._();
 

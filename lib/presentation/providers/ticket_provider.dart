@@ -7,23 +7,19 @@ import '../../data/models/notification_model.dart';
 class TicketProvider extends ChangeNotifier {
   List<TicketModel> _tickets = [];
 
-  // LOAD
   void loadTickets() {
     _tickets = LocalStorageService.getTickets();
     notifyListeners();
   }
 
-  // ALL
   List<TicketModel> get tickets => _tickets;
 
-  // FILTERED
   List<TicketModel> get filteredTickets {
     final list = List<TicketModel>.from(_tickets);
     list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return list;
   }
 
-  // BY USER
   List<TicketModel> getTicketsByUser(String userId) {
     return _tickets
         .where((t) => t.userId == userId)
@@ -31,14 +27,12 @@ class TicketProvider extends ChangeNotifier {
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
-  // BY HELPDESK
   List<TicketModel> getTicketsAssignedTo(String helpdeskId) {
     return _tickets
         .where((t) => t.assignedTo == helpdeskId)
         .toList();
   }
 
-  // STATS
   Map<String, int> get stats => {
     'total': _tickets.length,
     'open': _tickets.where((t) => t.status == 'open').length,
@@ -60,7 +54,6 @@ class TicketProvider extends ChangeNotifier {
     };
   }
 
-  // RECENT
   List<TicketModel> getRecentTickets({String? userId}) {
     final list = userId == null
         ? List<TicketModel>.from(_tickets)
@@ -70,7 +63,6 @@ class TicketProvider extends ChangeNotifier {
     return list.take(5).toList();
   }
 
-  // GET BY ID
   TicketModel? getTicketById(String id) {
     try {
       return _tickets.firstWhere((t) => t.id == id);
@@ -79,7 +71,6 @@ class TicketProvider extends ChangeNotifier {
     }
   }
 
-  // ================= HELPER NOTIF =================
   Future<void> _createNotification({
     required String title,
     required String body,
@@ -100,7 +91,6 @@ class TicketProvider extends ChangeNotifier {
     );
   }
 
-  // ================= CREATE =================
   Future<TicketModel> createTicket({
     required String title,
     required String description,
@@ -129,7 +119,6 @@ class TicketProvider extends ChangeNotifier {
     await LocalStorageService.addTicket(t);
     _tickets.insert(0, t);
 
-    // 🔥 NOTIF KE ADMIN & HELPDESK
     final users = LocalStorageService.getUsers();
     for (final u in users) {
       if (u.role == 'admin' || u.role == 'helpdesk') {
@@ -147,7 +136,6 @@ class TicketProvider extends ChangeNotifier {
     return t;
   }
 
-  // ================= UPDATE STATUS =================
   Future<void> updateStatus(
       String id,
       String status, {
@@ -165,7 +153,6 @@ class TicketProvider extends ChangeNotifier {
     _tickets[i] = updated;
     await LocalStorageService.updateTicket(updated);
 
-    // 🔥 NOTIF KE USER
     await _createNotification(
       title: 'Status Tiket',
       body: 'Status tiket ${updated.id} diubah menjadi $status',
@@ -177,7 +164,6 @@ class TicketProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ================= ASSIGN =================
   Future<void> assignTicket({
     required String ticketId,
     required String helpdeskId,
@@ -196,7 +182,6 @@ class TicketProvider extends ChangeNotifier {
     _tickets[i] = updated;
     await LocalStorageService.updateTicket(updated);
 
-    // 🔥 NOTIF KE HELPDESK
     await _createNotification(
       title: 'Tiket Ditugaskan',
       body: 'Kamu ditugaskan ke tiket ${updated.id}',
@@ -205,7 +190,6 @@ class TicketProvider extends ChangeNotifier {
       targetUserId: helpdeskId,
     );
 
-    // 🔥 NOTIF KE USER
     await _createNotification(
       title: 'Tiket Diproses',
       body: 'Tiket kamu sedang diproses oleh $helpdeskName',
@@ -217,7 +201,6 @@ class TicketProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ================= COMMENTS =================
   List<CommentModel> getCommentsByTicket(String id) {
     return LocalStorageService.getCommentsByTicket(id);
   }

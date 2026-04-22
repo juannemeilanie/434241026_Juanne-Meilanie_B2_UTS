@@ -66,8 +66,6 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 40),
-
-              // Header
               Row(
                 children: [
                   Container(
@@ -108,7 +106,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    // Email
                     TextFormField(
                       controller: _emailCtrl,
                       keyboardType: TextInputType.emailAddress,
@@ -129,8 +126,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-
-                    // Password
                     TextFormField(
                       controller: _passCtrl,
                       obscureText: _obscurePass,
@@ -191,7 +186,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 24),
 
-              // Info
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(14),

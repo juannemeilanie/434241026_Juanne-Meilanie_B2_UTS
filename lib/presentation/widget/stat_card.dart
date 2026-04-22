@@ -31,7 +31,6 @@ class StatCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Background circle (aksen modern)
           Positioned(
             right: -20,
             top: -20,
@@ -44,7 +43,6 @@ class StatCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Icon
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -60,7 +58,6 @@ class StatCard extends StatelessWidget {
 
               const Spacer(),
 
-              // Value
               Text(
                 value.toString(),
                 style: const TextStyle(
@@ -71,7 +68,6 @@ class StatCard extends StatelessWidget {
 
               const SizedBox(height: 4),
 
-              // Label
               Text(
                 label,
                 style: TextStyle(

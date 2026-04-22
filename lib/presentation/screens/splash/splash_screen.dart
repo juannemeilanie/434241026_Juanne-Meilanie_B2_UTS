@@ -26,9 +26,9 @@ class _SplashState extends State<SplashScreen> {
     final auth = context.read<AuthProvider>();
 
     if (auth.isLoggedIn) {
-      context.go('/dashboard'); // ✅ FIX
+      context.go('/dashboard');
     } else {
-      context.go('/login');     // ✅ FIX
+      context.go('/login');
     }
   }
 

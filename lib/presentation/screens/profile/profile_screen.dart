@@ -32,8 +32,6 @@ class ProfileScreen extends StatelessWidget {
             Text(user?.email ?? '-'),
 
             const SizedBox(height: 20),
-
-            // Dark Mode
             Consumer<ThemeProvider>(
               builder: (ctx, theme, _) => SwitchListTile(
                 title: const Text('Dark Mode'),
@@ -44,7 +42,6 @@ class ProfileScreen extends StatelessWidget {
 
             const Spacer(),
 
-            // Logout
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red.shade100,

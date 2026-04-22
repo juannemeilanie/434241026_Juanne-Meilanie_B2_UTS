@@ -31,14 +31,12 @@ class DashboardScreen extends StatelessWidget {
 
     final user = authProvider.currentUser;
 
-    // ✅ HANDLE NULL USER
     if (user == null) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    // ✅ AUTO LOAD NOTIF
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<NotificationProvider>().loadForUser(user.id);
     });
@@ -46,12 +44,10 @@ class DashboardScreen extends StatelessWidget {
 
     final theme = Theme.of(context);
 
-    // ✅ FIX STATS
     final stats = user.isHelpdesk
         ? ticketProvider.stats
         : ticketProvider.getStatsByUser(user.id);
 
-    // ✅ FIX RECENT
     final recentTickets = user.isHelpdesk
         ? ticketProvider.getRecentTickets()
         : ticketProvider.getRecentTickets(userId: user.id);
@@ -59,11 +55,10 @@ class DashboardScreen extends StatelessWidget {
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
-          ticketProvider.loadTickets(); // ✅ refresh
+          ticketProvider.loadTickets();
         },
         child: CustomScrollView(
           slivers: [
-            // ================= APPBAR =================
             SliverAppBar(
               expandedHeight: 140,
               pinned: true,
@@ -130,7 +125,6 @@ class DashboardScreen extends StatelessWidget {
                             ),
                           ),
 
-                          // ===== NOTIF =====
                           Stack(
                             children: [
                               IconButton(
@@ -184,7 +178,6 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
 
-            // ================= BODY =================
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -192,7 +185,6 @@ class DashboardScreen extends StatelessWidget {
                   crossAxisAlignment:
                   CrossAxisAlignment.start,
                   children: [
-                    // ===== STATS =====
                     Text(
                       'Ringkasan Tiket',
                       style: theme.textTheme.headlineSmall,
@@ -237,30 +229,15 @@ class DashboardScreen extends StatelessWidget {
 
                     const SizedBox(height: 24),
 
-                    // ===== USER BUTTON =====
-                    if (user.isUser)
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: () =>
-                              context.push('/create-ticket'),
-                          icon: const Icon(Icons.add),
-                          label:
-                          const Text('Buat Tiket Baru'),
-                        ),
-                      ),
-
                     if (user.isUser)
                       const SizedBox(height: 24),
 
-                    // ===== HELPDESK =====
                     if (user.isHelpdesk) ...[
                       _buildHelpdeskInfo(
                           ticketProvider, user.id),
                       const SizedBox(height: 24),
                     ],
 
-                    // ===== RECENT =====
                     Row(
                       mainAxisAlignment:
                       MainAxisAlignment.spaceBetween,
@@ -314,7 +291,6 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  // ================= HELPDESK =================
   Widget _buildHelpdeskInfo(
       TicketProvider provider, String helpdeskId) {
     final myTickets = provider.filteredTickets

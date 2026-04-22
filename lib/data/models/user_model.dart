@@ -13,7 +13,6 @@ class UserModel {
     required this.role,
   });
 
-  // 🔥 FIX ERROR INI
   String get initials {
     final parts = name.trim().split(' ');
     if (parts.length >= 2) {
