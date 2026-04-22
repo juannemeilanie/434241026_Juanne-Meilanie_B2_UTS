@@ -7,8 +7,12 @@ import '../../data/models/notification_model.dart';
 class TicketProvider extends ChangeNotifier {
   List<TicketModel> _tickets = [];
 
-  void loadTickets() {
-    _tickets = LocalStorageService.getTickets();
+  Future<void> loadTickets() async {
+    final data = LocalStorageService.getTickets();
+
+    if (_tickets.length == data.length) return;
+
+    _tickets = data;
     notifyListeners();
   }
 

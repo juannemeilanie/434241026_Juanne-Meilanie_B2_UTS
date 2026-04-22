@@ -13,6 +13,9 @@ class CommentBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Align(
       alignment:
       isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -22,8 +25,8 @@ class CommentBubble extends StatelessWidget {
         constraints: const BoxConstraints(maxWidth: 280),
         decoration: BoxDecoration(
           color: isCurrentUser
-              ? Colors.blue[100]
-              : Colors.grey[200],
+              ? colorScheme.primary.withOpacity(0.15)
+              : colorScheme.surfaceVariant,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -31,15 +34,22 @@ class CommentBubble extends StatelessWidget {
           children: [
             Text(
               comment.userName,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 12),
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 4),
-            Text(comment.content),
+            Text(
+              comment.content,
+              style: theme.textTheme.bodyMedium,
+            ),
             const SizedBox(height: 6),
             Text(
               _formatTime(comment.createdAt),
-              style: const TextStyle(fontSize: 10, color: Colors.grey),
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontSize: 10,
+                color: theme.hintColor,
+              ),
             ),
           ],
         ),

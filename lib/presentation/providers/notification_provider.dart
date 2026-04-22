@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:utsmobile/data/services/local_storage_service.dart';
 import 'package:utsmobile/data/models/notification_model.dart';
-
 class NotificationProvider extends ChangeNotifier {
   List<NotificationModel> _notifications = [];
   String? _userId;
@@ -11,11 +10,18 @@ class NotificationProvider extends ChangeNotifier {
   int get unreadCount =>
       _notifications.where((n) => !n.isRead).length;
 
-
   void loadForUser(String userId) {
+    final newData =
+    LocalStorageService.getNotificationsForUser(userId);
+
+    if (_userId == userId &&
+        _notifications.length == newData.length) {
+      return;
+    }
+
     _userId = userId;
-    _notifications =
-        LocalStorageService.getNotificationsForUser(userId);
+    _notifications = newData;
+
     notifyListeners();
   }
 
@@ -29,5 +35,4 @@ class NotificationProvider extends ChangeNotifier {
     await LocalStorageService.markAllNotificationsRead(_userId!);
     loadForUser(_userId!);
   }
-
 }

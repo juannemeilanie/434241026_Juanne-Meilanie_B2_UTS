@@ -143,8 +143,7 @@ class DashboardScreen extends StatelessWidget {
                                     padding:
                                     const EdgeInsets.all(3),
                                     decoration: BoxDecoration(
-                                      color: AppColors.error,
-                                      borderRadius:
+                                      color: Theme.of(context).colorScheme.error,                                      borderRadius:
                                       BorderRadius.circular(10),
                                     ),
                                     constraints:
@@ -159,7 +158,6 @@ class DashboardScreen extends StatelessWidget {
                                             ? '99+'
                                             : '${notifProvider.unreadCount}',
                                         style: const TextStyle(
-                                          color: Colors.white,
                                           fontSize: 9,
                                           fontWeight:
                                           FontWeight.bold,
@@ -234,7 +232,7 @@ class DashboardScreen extends StatelessWidget {
 
                     if (user.isHelpdesk) ...[
                       _buildHelpdeskInfo(
-                          ticketProvider, user.id),
+                          context, ticketProvider, user.id),
                       const SizedBox(height: 24),
                     ],
 
@@ -292,7 +290,10 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildHelpdeskInfo(
-      TicketProvider provider, String helpdeskId) {
+      BuildContext context, TicketProvider provider, String helpdeskId) {
+
+    final theme = Theme.of(context);
+
     final myTickets = provider.filteredTickets
         .where((t) =>
     t.assignedTo == helpdeskId &&
@@ -302,18 +303,21 @@ class DashboardScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.warningLight,
+        color: theme.colorScheme.secondary.withOpacity(0.15),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
-          const Icon(Icons.assignment_ind,
-              color: AppColors.warning),
+          Icon(
+            Icons.assignment_ind,
+            color: theme.colorScheme.secondary,
+          ),
           const SizedBox(width: 8),
-          Text(
-            '${myTickets.length} tiket sedang kamu tangani',
-            style: const TextStyle(
-                fontWeight: FontWeight.w600),
+          Expanded(
+            child: Text(
+              '${myTickets.length} tiket sedang kamu tangani',
+              style: theme.textTheme.bodyMedium,
+            ),
           ),
         ],
       ),

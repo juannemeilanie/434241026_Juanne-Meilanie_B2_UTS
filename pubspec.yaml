@@ -46,7 +46,7 @@ dependencies:
   get_it: ^7.6.4
 
   image_picker: ^1.0.4
-  file_picker: ^6.1.1
+  file_picker: ^8.0.0
   cached_network_image: ^3.3.0
 
   # UI Utilities
