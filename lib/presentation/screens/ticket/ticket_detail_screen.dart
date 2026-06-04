@@ -25,11 +25,9 @@ class TicketDetailScreen extends StatefulWidget {
       _TicketDetailScreenState();
 }
 
-class _TicketDetailScreenState
-    extends State<TicketDetailScreen> {
+class _TicketDetailScreenState extends State<TicketDetailScreen> {
   final _commentCtrl = TextEditingController();
   final _scrollCtrl = ScrollController();
-
   bool _isSendingComment = false;
 
   @override
@@ -149,7 +147,7 @@ class _TicketDetailScreenState
     final ticketProv = context.read<TicketProvider>();
 
     final helpdesks = LocalStorageService.getUsers()
-        .where((u) => u.isHelpdesk)
+        .where((u) => u.role == 'helpdesk')
         .toList();
 
     String? selectedId;
@@ -296,7 +294,9 @@ class _TicketDetailScreenState
                 crossAxisAlignment:
                 CrossAxisAlignment.start,
                 children: [
-                  Card(
+                  SizedBox(
+                  width: double.infinity,   // ← tambah wrapper ini
+                  child: Card(
                     child: Padding(
                       padding:
                       const EdgeInsets.all(16),
@@ -328,28 +328,53 @@ class _TicketDetailScreenState
                           Text(ticket.description),
 
                           if (ticket.attachments.isNotEmpty) ...[
+                            const SizedBox(height: 16),
+
+                            Text(
+                              'Lampiran',
+                              style: theme.textTheme.titleMedium,
+                            ),
+
                             const SizedBox(height: 12),
-                            const Text('Lampiran:'),
 
-                            const SizedBox(height: 8),
-
-                            Wrap(
-                              spacing: 8,
+                            Column(
                               children: ticket.attachments.map((path) {
-                                return ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: kIsWeb
-                                      ? Image.network(
-                                    path,
-                                    width: 80,
-                                    height: 80,
-                                    fit: BoxFit.cover,
-                                  )
-                                      : Image.file(
-                                    File(path),
-                                    width: 80,
-                                    height: 80,
-                                    fit: BoxFit.cover,
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(14),
+                                    child: Container(
+                                      width: double.infinity,
+                                      constraints: const BoxConstraints(
+                                        maxHeight: 260,
+                                        minHeight: 180,
+                                      ),
+                                      color: Colors.grey.shade200,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => Dialog(
+                                              insetPadding: const EdgeInsets.all(12),
+                                              child: InteractiveViewer(
+                                                child: kIsWeb
+                                                    ? Image.network(path)
+                                                    : Image.file(File(path)),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: kIsWeb
+                                            ? Image.network(
+                                          path,
+                                          fit: BoxFit.cover,
+                                        )
+                                            : Image.file(
+                                          File(path),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 );
                               }).toList(),
@@ -368,6 +393,7 @@ class _TicketDetailScreenState
                         ],
                       ),
                     ),
+                  ),
                   ),
 
                   const SizedBox(height: 16),
