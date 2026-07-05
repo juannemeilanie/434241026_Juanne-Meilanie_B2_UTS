@@ -29,23 +29,23 @@ class CommentModel {
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'ticketId': ticketId,
-    'userId': userId,
-    'userName': userName,
-    'userRole': userRole,
+    'ticket_id': ticketId,
+    'user_id': userId,
+    'user_name': userName,
+    'user_role': userRole,
     'content': content,
-    'createdAt': createdAt.toIso8601String(),
-    'isInternal': isInternal,
+    'created_at': createdAt.toIso8601String(),
+    'is_internal': isInternal,
   };
 
   factory CommentModel.fromJson(Map<String, dynamic> json) => CommentModel(
     id: json['id'],
-    ticketId: json['ticketId'],
-    userId: json['userId'],
-    userName: json['userName'],
-    userRole: json['userRole'],
+    ticketId: json['ticket_id'],
+    userId: json['user_id'],
+    userName: json['user_name'],
+    userRole: json['user_role'],
     content: json['content'],
-    createdAt: DateTime.parse(json['createdAt']),
-    isInternal: json['isInternal'] ?? false,
+    createdAt: DateTime.parse(json['created_at']),
+    isInternal: json['is_internal'] ?? false,
   );
 }

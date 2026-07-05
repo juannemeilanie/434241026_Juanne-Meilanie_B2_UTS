@@ -18,8 +18,8 @@ class DashboardScreen extends StatelessWidget {
   String _greeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) return 'Pagi';
-    if (hour < 17) return 'Siang';
-    if (hour < 20) return 'Sore';
+    if (hour < 15) return 'Siang';
+    if (hour < 18) return 'Sore';
     return 'Malam';
   }
 
@@ -37,19 +37,24 @@ class DashboardScreen extends StatelessWidget {
       );
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<NotificationProvider>().loadForUser(user.id);
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   context.read<NotificationProvider>().loadForUser(user.id);
+    // });
 
     final theme = Theme.of(context);
 
-    final stats = user.isHelpdesk
+    final stats = user.isAdmin
         ? ticketProvider.stats
+        : user.isHelpdesk
+        ? ticketProvider.getStatsByHelpdesk(user.id)
         : ticketProvider.getStatsByUser(user.id);
 
-    final recentTickets = user.isHelpdesk
+    final recentTickets = user.isAdmin
         ? ticketProvider.getRecentTickets()
+        : user.isHelpdesk
+        ? ticketProvider.getRecentTickets(helpdeskId: user.id)
         : ticketProvider.getRecentTickets(userId: user.id);
+
 
     return Scaffold(
       body: RefreshIndicator(
@@ -198,8 +203,8 @@ class DashboardScreen extends StatelessWidget {
                           icon: Icons.pending_actions,
                         ),
                         StatCard(
-                          label: 'Resolved',
-                          value: stats['resolved'] ?? 0,
+                          label: 'Closed',
+                          value: stats['closed'] ?? 0,
                           color: AppColors.success,
                           icon: Icons.check_circle,
                         ),
@@ -248,12 +253,10 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: user.isUser
-          ? FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/create-ticket'),
         child: const Icon(Icons.add),
       )
-          : null,
     );
   }
 
@@ -298,9 +301,9 @@ class _TrackProgressCard extends StatelessWidget {
     final total = stats['total'] ?? 0;
     final open = stats['open'] ?? 0;
     final inProgress = stats['in_progress'] ?? 0;
-    final resolved = stats['resolved'] ?? 0;
+    final closed = stats['closed'] ?? 0;
 
-    final completionRate = total > 0 ? (resolved / total) : 0.0;
+    final completionRate = total > 0 ? (closed / total) : 0.0;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -373,7 +376,7 @@ class _TrackProgressCard extends StatelessWidget {
                 icon: Icons.fiber_new_outlined,
                 isActive: open > 0,
               ),
-              _ProgressConnector(filled: inProgress > 0 || resolved > 0),
+              _ProgressConnector(filled: inProgress > 0 || closed > 0),
               _ProgressStep(
                 label: 'In Progress',
                 count: inProgress,
@@ -382,14 +385,14 @@ class _TrackProgressCard extends StatelessWidget {
                 icon: Icons.pending_outlined,
                 isActive: inProgress > 0,
               ),
-              _ProgressConnector(filled: resolved > 0),
+              _ProgressConnector(filled: closed > 0),
               _ProgressStep(
-                label: 'Resolved',
-                count: resolved,
+                label: 'Closed',
+                count: closed,
                 total: total,
                 color: AppColors.success,
                 icon: Icons.check_circle_outline,
-                isActive: resolved > 0,
+                isActive: closed > 0,
               ),
             ],
           ),
@@ -405,7 +408,7 @@ class _TrackProgressCard extends StatelessWidget {
                   label: 'Progress', count: inProgress, color: AppColors.warning),
               const SizedBox(width: 8),
               _StatusChip(
-                  label: 'Resolved', count: resolved, color: AppColors.success),
+                  label: 'Closed', count: closed, color: AppColors.success),
             ],
           ),
         ],

@@ -37,10 +37,13 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (success) {
-      // ✅ Load tiket & notifikasi setelah login berhasil
       final userId = authProvider.currentUser!.id;
-      context.read<TicketProvider>().loadTickets();
-      context.read<NotificationProvider>().loadForUser(userId);
+
+      await context.read<TicketProvider>().loadTickets();
+      await context.read<NotificationProvider>().loadForUser(userId);
+
+      if (!mounted) return;
+
       context.go('/dashboard');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

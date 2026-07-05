@@ -22,7 +22,7 @@ class UserModel {
   }
 
   bool get isAdmin => role == 'admin';
-  bool get isHelpdesk => role == 'helpdesk' || role == 'admin';
+  bool get isHelpdesk => role == 'helpdesk';
   bool get isUser => role == 'user';
 
   UserModel copyWith({

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../../data/services/local_storage_service.dart';
+import '../../data/services/supabase_service.dart';
 import '../../data/models/user_model.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -25,7 +26,8 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
 
     final user =
-    LocalStorageService.getUserByEmail(email.trim().toLowerCase());
+    await SupabaseService.getUserByEmail(
+        email.trim().toLowerCase());
 
     if (user == null) {
       _setError('Email tidak terdaftar');
@@ -38,6 +40,7 @@ class AuthProvider extends ChangeNotifier {
     }
 
     _currentUser = user;
+
     await LocalStorageService.saveLoggedInUserId(user.id);
 
     _setLoading(false);
@@ -49,31 +52,43 @@ class AuthProvider extends ChangeNotifier {
       String email,
       String password,
       ) async {
-    _setLoading(true);
+    try {
+      _setLoading(true);
 
-    final existing =
-    LocalStorageService.getUserByEmail(email.trim().toLowerCase());
+      final existing =
+      await SupabaseService.getUserByEmail(
+        email.trim().toLowerCase(),
+      );
 
-    if (existing != null) {
-      _setError('Email sudah terdaftar');
+      if (existing != null) {
+        _setError('Email sudah terdaftar');
+        return false;
+      }
+
+      final newUser = UserModel(
+        id: 'u${DateTime.now().millisecondsSinceEpoch}',
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        password: password,
+        role: 'user',
+      );
+
+      await SupabaseService.addUser(newUser);
+
+      _currentUser = newUser;
+
+      await LocalStorageService.saveLoggedInUserId(
+        newUser.id,
+      );
+
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      print('REGISTER ERROR: $e');
+
+      _setError(e.toString());
       return false;
     }
-
-    final newUser = UserModel(
-      id: 'u${DateTime.now().millisecondsSinceEpoch}',
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      password: password,
-      role: 'user',
-    );
-
-    await LocalStorageService.addUser(newUser);
-
-    _currentUser = newUser;
-    await LocalStorageService.saveLoggedInUserId(newUser.id);
-
-    _setLoading(false);
-    return true;
   }
 
   Future<void> createUserByAdmin({
@@ -90,7 +105,7 @@ class AuthProvider extends ChangeNotifier {
       role: role,
     );
 
-    await LocalStorageService.addUser(newUser);
+    await SupabaseService.addUser(newUser);
   }
 
   Future<bool> resetPassword(String email) async {
@@ -107,7 +122,7 @@ class AuthProvider extends ChangeNotifier {
     if (_currentUser == null) return;
 
     final updated = _currentUser!.copyWith(name: name.trim());
-    await LocalStorageService.updateUser(updated);
+    await SupabaseService.updateUser(updated);
 
     _currentUser = updated;
     notifyListeners();

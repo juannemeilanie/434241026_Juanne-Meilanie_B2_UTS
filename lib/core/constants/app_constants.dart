@@ -31,10 +31,8 @@ class AppColors {
         return const Color(0xFF1565C0);
       case 'in_progress':
         return const Color(0xFFF57F17);
-      case 'resolved':
-        return const Color(0xFF2E7D32);
       case 'closed':
-        return const Color(0xFF757575);
+        return const Color(0xFF2E7D32);
       default:
         return const Color(0xFF757575);
     }
@@ -46,8 +44,6 @@ class AppColors {
         return const Color(0xFFE3F2FD);
       case 'in_progress':
         return const Color(0xFFFFF8E1);
-      case 'resolved':
-        return const Color(0xFFE8F5E9);
       case 'closed':
         return const Color(0xFFF5F5F5);
       default:
@@ -92,7 +88,6 @@ class TicketConstants {
   static const List<String> statuses = [
     'open',
     'in_progress',
-    'resolved',
     'closed',
   ];
 
@@ -109,8 +104,6 @@ class TicketConstants {
         return 'Open';
       case 'in_progress':
         return 'In Progress';
-      case 'resolved':
-        return 'Resolved';
       case 'closed':
         return 'Closed';
       default:

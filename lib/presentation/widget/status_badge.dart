@@ -12,10 +12,8 @@ class StatusBadge extends StatelessWidget {
         return Colors.blue;
       case 'in_progress':
         return Colors.orange;
-      case 'resolved':
-        return Colors.green;
       case 'closed':
-        return Colors.grey;
+        return Colors.green;
       default:
         return Colors.black;
     }

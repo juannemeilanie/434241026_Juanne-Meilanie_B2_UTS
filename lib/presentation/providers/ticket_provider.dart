@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../../data/services/local_storage_service.dart';
+import '../../data/services/supabase_service.dart';
 import '../../data/models/ticket_model.dart';
 import '../../data/models/comment_model.dart';
 import '../../data/models/notification_model.dart';
@@ -8,7 +9,7 @@ class TicketProvider extends ChangeNotifier {
   List<TicketModel> _tickets = [];
 
   Future<void> loadTickets() async {
-    final data = LocalStorageService.getTickets();
+    final data = await SupabaseService.getTickets();
 
     if (_tickets.length == data.length) return;
 
@@ -22,6 +23,10 @@ class TicketProvider extends ChangeNotifier {
     final list = List<TicketModel>.from(_tickets);
     list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return list;
+  }
+
+  List<TicketModel> getAllTickets() {
+    return filteredTickets;
   }
 
   List<TicketModel> getTicketsByUser(String userId) {
@@ -42,8 +47,8 @@ class TicketProvider extends ChangeNotifier {
     'open': _tickets.where((t) => t.status == 'open').length,
     'in_progress':
     _tickets.where((t) => t.status == 'in_progress').length,
-    'resolved':
-    _tickets.where((t) => t.status == 'resolved').length,
+    'closed':
+    _tickets.where((t) => t.status == 'closed').length,
   };
 
   Map<String, int> getStatsByUser(String id) {
@@ -53,15 +58,31 @@ class TicketProvider extends ChangeNotifier {
       'open': mine.where((t) => t.status == 'open').length,
       'in_progress':
       mine.where((t) => t.status == 'in_progress').length,
-      'resolved':
-      mine.where((t) => t.status == 'resolved').length,
+      'closed':
+      mine.where((t) => t.status == 'closed').length,
     };
   }
 
-  List<TicketModel> getRecentTickets({String? userId}) {
-    final list = userId == null
-        ? List<TicketModel>.from(_tickets)
-        : _tickets.where((t) => t.userId == userId).toList();
+  Map<String, int> getStatsByHelpdesk(String helpdeskId) {
+    final mine = _tickets.where((t) => t.assignedTo == helpdeskId);
+    return {
+      'total': mine.length,
+      'open': mine.where((t) => t.status == 'open').length,
+      'in_progress': mine.where((t) => t.status == 'in_progress').length,
+      'closed': mine.where((t) => t.status == 'closed').length,
+    };
+  }
+
+  List<TicketModel> getRecentTickets({String? userId, String? helpdeskId}) {
+    List<TicketModel> list;
+
+    if (helpdeskId != null) {
+      list = _tickets.where((t) => t.assignedTo == helpdeskId).toList();
+    } else if (userId != null) {
+      list = _tickets.where((t) => t.userId == userId).toList();
+    } else {
+      list = List<TicketModel>.from(_tickets);
+    }
 
     list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return list.take(5).toList();
@@ -82,7 +103,7 @@ class TicketProvider extends ChangeNotifier {
     required String type,
     required String targetUserId,
   }) async {
-    await LocalStorageService.addNotification(
+    await SupabaseService.addNotification(
       NotificationModel(
         id: DateTime.now().toString(),
         title: title,
@@ -120,10 +141,10 @@ class TicketProvider extends ChangeNotifier {
       attachments: attachments,
     );
 
-    await LocalStorageService.addTicket(t);
+    await SupabaseService.addTicket(t);
     _tickets.insert(0, t);
 
-    final users = LocalStorageService.getUsers();
+    final users = await SupabaseService.getUsers();
     for (final u in users) {
       if (u.role == 'admin' || u.role == 'helpdesk') {
         await _createNotification(
@@ -155,7 +176,7 @@ class TicketProvider extends ChangeNotifier {
     );
 
     _tickets[i] = updated;
-    await LocalStorageService.updateTicket(updated);
+    await SupabaseService.updateTicket(updated);
 
     await _createNotification(
       title: 'Status Tiket',
@@ -184,7 +205,7 @@ class TicketProvider extends ChangeNotifier {
     );
 
     _tickets[i] = updated;
-    await LocalStorageService.updateTicket(updated);
+    await SupabaseService.updateTicket(updated);
 
     await _createNotification(
       title: 'Tiket Ditugaskan',
@@ -205,8 +226,8 @@ class TicketProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<CommentModel> getCommentsByTicket(String id) {
-    return LocalStorageService.getCommentsByTicket(id);
+  Future<List<CommentModel>> getCommentsByTicket(String id) async {
+    return await SupabaseService.getCommentsByTicket(id);
   }
 
   Future<void> addComment({
@@ -216,7 +237,7 @@ class TicketProvider extends ChangeNotifier {
     required String userRole,
     required String content,
   }) async {
-    await LocalStorageService.addComment(
+    await SupabaseService.addComment(
       CommentModel(
         id: DateTime.now().toString(),
         ticketId: ticketId,
@@ -252,5 +273,17 @@ class TicketProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  Future<bool> deleteTicket(String ticketId) async {
+    final ticket = getTicketById(ticketId);
+    if (ticket == null) return false;
+
+    if (ticket.assignedTo != null) return false;
+
+    await SupabaseService.deleteTicket(ticketId);
+    _tickets.removeWhere((t) => t.id == ticketId);
+    notifyListeners();
+    return true;
   }
 }

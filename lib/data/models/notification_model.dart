@@ -38,11 +38,11 @@ class NotificationModel {
     'id': id,
     'title': title,
     'body': body,
-    'ticketId': ticketId,
+    'ticket_id': ticketId,
     'type': type,
-    'targetUserId': targetUserId,
-    'isRead': isRead,
-    'createdAt': createdAt.toIso8601String(),
+    'target_user_id': targetUserId,
+    'is_read': isRead,
+    'created_at': createdAt.toIso8601String(),
   };
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) =>
@@ -50,10 +50,10 @@ class NotificationModel {
         id: json['id'],
         title: json['title'],
         body: json['body'],
-        ticketId: json['ticketId'],
+        ticketId: json['ticket_id'],
         type: json['type'],
-        targetUserId: json['targetUserId'] ?? '',
-        isRead: json['isRead'] ?? false,
-        createdAt: DateTime.parse(json['createdAt']),
+        targetUserId: json['target_user_id'] ?? '',
+        isRead: json['is_read'] ?? false,
+        createdAt: DateTime.parse(json['created_at']),
       );
 }

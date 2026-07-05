@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:utsmobile/core/router/app_router.dart';
 import 'package:utsmobile/core/theme/app_theme.dart';
 import 'package:utsmobile/data/services/local_storage_service.dart';
@@ -16,7 +17,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await LocalStorageService.init();
-  await LocalStorageService.seedDefaultUsers();
+
+  await Supabase.initialize(
+    url: 'https://ybhbneinwsnmhqpbxwsh.supabase.co',
+    anonKey: 'sb_publishable_yhteVrbltWboT2ydptOnXQ_kQqLjrjY',
+  );
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

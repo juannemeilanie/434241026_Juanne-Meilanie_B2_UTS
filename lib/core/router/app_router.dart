@@ -14,6 +14,8 @@ import 'package:utsmobile/presentation/screens/ticket/ticket_detail_screen.dart'
 import 'package:utsmobile/presentation/screens/ticket/create_ticket_screen.dart';
 import 'package:utsmobile/presentation/screens/notification/notification_screen.dart';
 import 'package:utsmobile/presentation/screens/profile/profile_screen.dart';
+import 'package:utsmobile/presentation/screens/profile/settings_screen.dart';
+import 'package:utsmobile/presentation/screens/admin/manage_users_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -90,6 +92,20 @@ GoRouter createRouter(AuthProvider authProvider) {
         builder: (context, state) => TicketDetailScreen(
           ticketId: state.pathParameters['id']!,
         ),
+      ),
+
+      GoRoute(
+        path: '/settings',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) =>
+        const SettingsScreen(),
+      ),
+
+      GoRoute(
+        path: '/manage-users',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) =>
+        const ManageUsersScreen(),
       ),
     ],
   );

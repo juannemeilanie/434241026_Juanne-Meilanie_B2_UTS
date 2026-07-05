@@ -39,10 +39,14 @@ class _SplashState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.confirmation_number,
-              size: 80,
-              color: Theme.of(context).primaryColor,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Image.asset(
+                  'assets/icon/LOGO(2).png',
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
             ),
             const SizedBox(height: 16),
             const Text(

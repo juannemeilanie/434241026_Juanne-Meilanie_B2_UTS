@@ -50,29 +50,45 @@ class _CreateTicketScreenState
 
     setState(() => _isLoading = true);
 
-    final ticketProv = context.read<TicketProvider>();
+    try {
+      final ticketProv = context.read<TicketProvider>();
 
-    final attachments = _images.map((e) => e.path).toList();
+      final attachments =
+      _images.map((e) => e.path).toList();
 
-    final ticket = await ticketProv.createTicket(
-      title: _titleCtrl.text.trim(),
-      description: _descCtrl.text.trim(),
-      category: _category,
-      priority: _priority,
-      userId: user.id,
-      userName: user.name,
-      attachments: attachments,
-    );
+      final ticket = await ticketProv.createTicket(
+        title: _titleCtrl.text.trim(),
+        description: _descCtrl.text.trim(),
+        category: _category,
+        priority: _priority,
+        userId: user.id,
+        userName: user.name,
+        attachments: attachments,
+      );
 
-    setState(() => _isLoading = false);
+      if (!mounted) return;
 
-    if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+          Text('Tiket ${ticket.id} berhasil dibuat'),
+        ),
+      );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Tiket ${ticket.id} berhasil dibuat')),
-    );
+      context.pop();
+    } catch (e) {
+      if (!mounted) return;
 
-    context.pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal membuat tiket: $e'),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:utsmobile/presentation/providers/auth_provider.dart';
 import 'package:utsmobile/presentation/providers/ticket_provider.dart';
 import 'dart:io';
 import 'package:utsmobile/data/services/local_storage_service.dart';
+import 'package:utsmobile/data/services/supabase_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:utsmobile/presentation/widget/status_badge.dart';
 import 'package:utsmobile/presentation/widget/priority_badge.dart';
@@ -11,6 +12,7 @@ import 'package:utsmobile/presentation/widget/comment_bubble.dart';
 
 import 'package:utsmobile/core/constants/app_constants.dart';
 import 'package:utsmobile/core/utils/date_formatter.dart';
+import '../../../data/models/comment_model.dart';
 
 class TicketDetailScreen extends StatefulWidget {
   final String ticketId;
@@ -57,6 +59,10 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
       content: text,
     );
 
+    if (mounted) {
+      setState(() {});
+    }
+
     _commentCtrl.clear();
     setState(() => _isSendingComment = false);
 
@@ -80,7 +86,10 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
 
     if (ticket == null || user == null) return;
 
-    String selected = ticket.status;
+    final availableStatuses =
+    user.isHelpdesk ? ['closed'] : TicketConstants.statuses;
+
+    String selected = availableStatuses.first;
 
     await showDialog(
       context: context,
@@ -90,7 +99,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
           builder: (_, setStateDialog) {
             return Column(
               mainAxisSize: MainAxisSize.min,
-              children: TicketConstants.statuses.map((s) {
+              children: availableStatuses.map((s) {
                 return RadioListTile<String>(
                   value: s,
                   groupValue: selected,
@@ -242,16 +251,12 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
       );
     }
 
-    final comments =
-    ticketProv.getCommentsByTicket(widget.ticketId);
-
     final assignedUser = ticket.assignedTo != null
         ? LocalStorageService.getUserById(
         ticket.assignedTo!)
         : null;
 
-    final creatorUser =
-    LocalStorageService.getUserById(ticket.userId);
+    final creatorName = ticket.userName;
 
     final theme = Theme.of(context);
 
@@ -259,24 +264,31 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
       appBar: AppBar(
         title: Text(ticket.id),
         actions: [
-          if (user.isHelpdesk)
+          if (user.isAdmin)
             PopupMenuButton<String>(
               onSelected: (val) {
-                if (val == 'status') {
-                  _showUpdateStatusDialog();
-                }
                 if (val == 'assign') {
                   _showAssignDialog();
                 }
               },
               itemBuilder: (_) => const [
                 PopupMenuItem(
-                  value: 'status',
-                  child: Text('Update Status'),
-                ),
-                PopupMenuItem(
                   value: 'assign',
                   child: Text('Assign Tiket'),
+                ),
+              ],
+            ),
+          if (user.isHelpdesk)
+            PopupMenuButton<String>(
+              onSelected: (val) {
+                if (val == 'status') {
+                  _showUpdateStatusDialog();
+                }
+              },
+              itemBuilder: (_) => const [
+                PopupMenuItem(
+                  value: 'status',
+                  child: Text('Update Status'),
                 ),
               ],
             ),
@@ -295,7 +307,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                 CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                  width: double.infinity,   // ← tambah wrapper ini
+                  width: double.infinity,
                   child: Card(
                     child: Padding(
                       padding:
@@ -384,12 +396,15 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                           const SizedBox(height: 16),
 
                           Text(
-                              'Pelapor: ${creatorUser?.name ?? '-'}'),
+                              'Pelapor: ${ticket.userName}'
+                          ),
                           Text(
-                              'Ditangani: ${assignedUser?.name ?? 'Belum ada'}'),
+                            'Ditangani: ${ticket.assignedToName ?? 'Belum ada'}',
+                          ),
                           Text(DateFormatter
                               .formatDateTime(
-                              ticket.createdAt)),
+                              ticket.createdAt)
+                          ),
                         ],
                       ),
                     ),
@@ -399,24 +414,203 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                   const SizedBox(height: 16),
 
                   Text(
-                    'Komentar (${comments.length})',
+                    'Tracking Tiket',
                     style: theme.textTheme.titleMedium,
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
 
-                  if (comments.isEmpty)
-                    const Center(
-                        child:
-                        Text('Belum ada komentar'))
-                  else
-                    ...comments.map(
-                          (c) => CommentBubble(
-                        comment: c,
-                        isCurrentUser:
-                        c.userId == user.id,
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Tiket Dibuat',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      DateFormatter.formatDateTime(
+                                        ticket.createdAt,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 16),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                ticket.assignedTo != null
+                                    ? Icons.check_circle
+                                    : Icons.radio_button_unchecked,
+                                color: ticket.assignedTo != null
+                                    ? Colors.green
+                                    : Colors.grey,
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Tiket Di-Assign',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      ticket.assignedToName ??
+                                          'Belum di-assign',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 16),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                ticket.status == 'in_progress' ||
+                                    ticket.status == 'closed'
+                                    ? Icons.check_circle
+                                    : Icons.radio_button_unchecked,
+                                color:
+                                ticket.status == 'in_progress' ||
+                                    ticket.status == 'closed'
+                                    ? Colors.green
+                                    : Colors.grey,
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: const [
+                                    Text(
+                                      'Sedang Ditangani Helpdesk',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // STEP 4
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                ticket.status == 'closed'
+                                    ? Icons.check_circle
+                                    : Icons.radio_button_unchecked,
+                                color: ticket.status == 'closed'
+                                    ? Colors.green
+                                    : Colors.grey,
+                              ),
+
+                              const SizedBox(width: 12),
+
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: const [
+                                    Text(
+                                      'Tiket Selesai',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  FutureBuilder<List<CommentModel>>(
+                    future: ticketProv.getCommentsByTicket(widget.ticketId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+
+                      if (snapshot.hasError) {
+                        return Text(
+                          'Error: ${snapshot.error}',
+                        );
+                      }
+
+                      final comments = snapshot.data ?? <CommentModel>[];
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Komentar (${comments.length})',
+                            style: theme.textTheme.titleMedium,
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          if (comments.isEmpty)
+                            const Center(
+                              child: Text('Belum ada komentar'),
+                            )
+                          else
+                            ...comments.map(
+                                  (c) => CommentBubble(
+                                comment: c,
+                                isCurrentUser: c.userId == user.id,
+                              ),
+                            ),
+                        ],
+                      );
+                    },
+                  ),
 
                   const SizedBox(height: 80),
                 ],

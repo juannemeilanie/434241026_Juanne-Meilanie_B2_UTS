@@ -79,12 +79,12 @@ class TicketModel {
     'category': category,
     'status': status,
     'priority': priority,
-    'userId': userId,
-    'userName': userName,
-    'assignedTo': assignedTo,
-    'assignedToName': assignedToName,
-    'createdAt': createdAt.toIso8601String(),
-    'updatedAt': updatedAt.toIso8601String(),
+    'user_id': userId,
+    'user_name': userName,
+    'assigned_to': assignedTo,
+    'assigned_to_name': assignedToName,
+    'created_at': createdAt.toIso8601String(),
+    'updated_at': updatedAt.toIso8601String(),
     'attachments': attachments,
   };
 
@@ -96,18 +96,16 @@ class TicketModel {
       category: json['category'] ?? '',
       status: json['status'] ?? 'open',
       priority: json['priority'] ?? 'low',
-      userId: json['userId'] ?? '',
-      userName: json['userName'] ?? '',
-      assignedTo: json['assignedTo'],
-      assignedToName: json['assignedToName'],
-      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ??
+      userId: json['user_id'] ?? '',
+      userName: json['user_name'] ?? '',
+      assignedTo: json['assigned_to'],
+      assignedToName: json['assigned_to_name'],
+      createdAt: DateTime.tryParse(json['created_at'] ?? '') ??
           DateTime.now(),
-      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ??
+      updatedAt: DateTime.tryParse(json['updated_at'] ?? '') ??
           DateTime.now(),
-      attachments: (json['attachments'] as List<dynamic>?)
+      attachments: (json['attachments'] as List?)
           ?.map((e) => e.toString())
-          .toList() ??
-          [],
-    );
+          .toList() ?? [],    );
   }
 }
