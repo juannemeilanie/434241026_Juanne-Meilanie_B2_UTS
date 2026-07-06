@@ -25,26 +25,28 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> login(String email, String password) async {
     _setLoading(true);
 
-    final user =
-    await SupabaseService.getUserByEmail(
-        email.trim().toLowerCase());
+    try {
+      final user = await SupabaseService.getUserByEmail(email.trim().toLowerCase());
 
-    if (user == null) {
-      _setError('Email tidak terdaftar');
+      if (user == null) {
+        _setError('Email tidak terdaftar');
+        return false;
+      }
+
+      if (user.password != password) {
+        _setError('Password salah');
+        return false;
+      }
+
+      _currentUser = user;
+      await LocalStorageService.saveLoggedInUserId(user.id);
+
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError('Gagal terhubung ke server. Pastikan koneksi internet aktif.');
       return false;
     }
-
-    if (user.password != password) {
-      _setError('Password salah');
-      return false;
-    }
-
-    _currentUser = user;
-
-    await LocalStorageService.saveLoggedInUserId(user.id);
-
-    _setLoading(false);
-    return true;
   }
 
   Future<bool> register(

@@ -66,6 +66,7 @@ class _CreateTicketScreenState
         attachments: attachments,
       );
 
+      await ticketProv.loadTickets();
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(

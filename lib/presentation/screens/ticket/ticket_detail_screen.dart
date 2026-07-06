@@ -155,7 +155,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
   Future<void> _showAssignDialog() async {
     final ticketProv = context.read<TicketProvider>();
 
-    final helpdesks = LocalStorageService.getUsers()
+    final helpdesks = (await SupabaseService.getUsers())
         .where((u) => u.role == 'helpdesk')
         .toList();
 
@@ -196,11 +196,9 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
 
               if (selectedId == null) return;
 
-              final selectedUser =
-              LocalStorageService.getUserById(
-                  selectedId!);
-
-              if (selectedUser == null) return;
+              final selectedUser = helpdesks.firstWhere(
+                    (u) => u.id == selectedId,
+              );
 
               await ticketProv.assignTicket(
                 ticketId: widget.ticketId,

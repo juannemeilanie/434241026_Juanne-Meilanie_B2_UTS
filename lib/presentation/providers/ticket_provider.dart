@@ -9,12 +9,13 @@ class TicketProvider extends ChangeNotifier {
   List<TicketModel> _tickets = [];
 
   Future<void> loadTickets() async {
-    final data = await SupabaseService.getTickets();
-
-    if (_tickets.length == data.length) return;
-
-    _tickets = data;
-    notifyListeners();
+    try {
+      final data = await SupabaseService.getTickets();
+      _tickets = data;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Gagal load tickets: $e");
+    }
   }
 
   List<TicketModel> get tickets => _tickets;
@@ -125,7 +126,8 @@ class TicketProvider extends ChangeNotifier {
     required String userName,
     List<String> attachments = const [],
   }) async {
-    final id = await LocalStorageService.generateTicketId();
+    final id = await SupabaseService.generateTicketId();
+
 
     final t = TicketModel(
       id: id,

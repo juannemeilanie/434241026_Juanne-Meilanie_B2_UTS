@@ -51,6 +51,31 @@ class SupabaseService {
         .toList();
   }
 
+  static Future<String> generateTicketId() async {
+    final data = await supabase
+        .from('tickets')
+        .select('id');
+
+    if ((data as List).isEmpty) {
+      return 'TKT-001';
+    }
+
+    int max = 0;
+
+    for (final item in data) {
+      final id = item['id'] as String;
+
+      if (id.startsWith('TKT-')) {
+        final nomor = int.tryParse(id.replaceFirst('TKT-', '')) ?? 0;
+        if (nomor > max) {
+          max = nomor;
+        }
+      }
+    }
+
+    return 'TKT-${(max + 1).toString().padLeft(3, '0')}';
+  }
+
   static Future<void> updateTicket(TicketModel ticket) async {
     await supabase
         .from('tickets')

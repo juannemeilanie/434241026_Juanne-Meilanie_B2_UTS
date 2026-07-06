@@ -50,10 +50,10 @@ class DashboardScreen extends StatelessWidget {
         : ticketProvider.getStatsByUser(user.id);
 
     final recentTickets = user.isAdmin
-        ? ticketProvider.getRecentTickets()
+        ? ticketProvider.filteredTickets.take(5).toList()
         : user.isHelpdesk
-        ? ticketProvider.getRecentTickets(helpdeskId: user.id)
-        : ticketProvider.getRecentTickets(userId: user.id);
+        ? ticketProvider.filteredTickets.where((t) => t.assignedTo == user.id).take(5).toList()
+        : ticketProvider.filteredTickets.where((t) => t.userId == user.id).take(5).toList();
 
 
     return Scaffold(
